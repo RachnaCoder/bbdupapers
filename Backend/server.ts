@@ -1,5 +1,4 @@
 import express from "express";
-import { createServer as createViteServer } from "vite";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
@@ -74,7 +73,7 @@ if (!MONGODB_URI) {
   })
   .then(() => {
     console.log("Successfully connected to MongoDB Atlas");
-    startServer(); // ✅ Only start server AFTER DB connects
+    startServer(); // Only start server AFTER DB connects
   })
   .catch((err) => {
     console.error("MongoDB Connection Failed!", err.message);
@@ -199,8 +198,6 @@ Rules:
       },
     });
 
-    // const result = JSON.parse(response.text || '{"isValid": false}');
-    // return result;
 
     let result;
 
@@ -409,9 +406,7 @@ app.get("/api/papers/view/:id", async (req, res) => {
     const paper = await Paper.findById(req.params.id);
     if (!paper) return res.status(404).json({ error: "Paper not found" });
     
-    // For Cloudinary, we can just redirect or proxy. 
-    // Redirecting is easier but might have iframe issues.
-    // However, Cloudinary URLs are usually iframe-friendly.
+    
     res.redirect(paper.fileUrl);
   } catch (error) {
     res.status(500).json({ error: "View failed" });
@@ -463,20 +458,8 @@ app.delete("/api/papers/:id", authenticateToken, async (req: any, res) => {
 
 
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    app.use(express.static(path.join(__dirname, "dist")));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "dist", "index.html"));
-    });
-  }
 
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
