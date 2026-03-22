@@ -348,6 +348,13 @@ app.post("/api/papers/upload", authenticateToken, upload.array("files", 4), asyn
     message: error.message,
   });
 }
+
+finally{
+  if (localFilePath && fs.existsSync(localFilePath)) {
+    fs.unlinkSync(localFilePath);
+    console.log("Temp file deleted:", localFilePath);
+  }
+}
 });
 
 
