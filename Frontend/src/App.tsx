@@ -179,12 +179,12 @@ export default function App() {
               
               <div className="relative group max-w-2xl mx-auto">
                 <div className="absolute -inset-1 bg-gradient-to-r from-brand-600 to-brand-400 rounded-3xl blur opacity-25 group-focus-within:opacity-50 transition duration-1000 group-focus-within:duration-200" />
-                <div className="relative flex items-center bg-zinc-800/50 border border-white/10 rounded-2xl backdrop-blur-xl overflow-hidden">
+                <div className="relative flex items-center bg-white border border-white/10 rounded-2xl backdrop-blur-xl overflow-hidden">
                   <Search className="ml-6 w-6 h-6 text-zinc-500 group-focus-within:text-brand-400 transition-colors" />
                   <input
                     type="text"
                     placeholder="Search by subject name or code..."
-                    className="w-full pl-4 pr-6 py-6 bg-transparent text-white placeholder:text-zinc-500 focus:outline-none text-xl font-medium"
+                    className="w-full pl-4 pr-6 py-6 bg-transparent text-black placeholder:text-zinc-500 focus:outline-none text-xl font-medium"
                     value={filters.search}
                     onChange={(e) => handleFilterChange("search", e.target.value)}
                   />
@@ -320,7 +320,6 @@ export default function App() {
                   <div key={paper.id}>
                     <PaperCard
                       paper={paper}
-                      onView={(id) => setViewingPaperId(id)}
                       onDelete={handleDeletePaper}
                       currentUser={user}
                     />

@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 
 interface PaperCardProps {
   paper: Paper;
-  // onView: (id: string) => void;
   onDelete?: (id: string) => void;
   currentUser?: UserType | null;
 }
