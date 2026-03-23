@@ -117,7 +117,8 @@ const Paper = mongoose.model("Paper", paperSchema);
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173", // frontend URL
+  origin: process.env.APP_URL,
+  
   credentials: true
 }));
 
