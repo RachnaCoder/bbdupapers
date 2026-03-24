@@ -174,7 +174,7 @@ export default function App() {
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-brand-300 to-brand-200">Exams</span>
               </h1>
               <p className="text-xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-                The ultimate repository for BBDU previous year question papers. Search, download, and share with your peers in seconds.
+                The ultimate repository for previous year question papers. Search, download, and share with your peers in seconds.
               </p>
               
               <div className="relative group max-w-2xl mx-auto">
@@ -435,10 +435,10 @@ export default function App() {
               <div className="p-1.5 bg-indigo-600 rounded-lg">
                 <FileText className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-zinc-900 dark:text-white tracking-tight">BBDU PAPERS</span>
+              <span className="text-lg font-bold text-zinc-900 dark:text-white tracking-tight">PAPERSTACK</span>
             </div>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              © {new Date().getFullYear()} BBDU PAPERS. Built for students, by students.
+              © {new Date().getFullYear()} PAPERSTACK Built for students, by students.
             </p>
             <div className="flex items-center gap-6">
               <a href="#" className="text-sm text-zinc-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors">Privacy</a>

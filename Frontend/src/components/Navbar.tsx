@@ -21,7 +21,7 @@ export default function Navbar({ user, onLogout, onOpenAuth, onOpenUpload, isDar
               <FileText className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight font-display">
-              BBDU <span className="text-brand-600">PAPERS</span>
+              PAPERSTACK <span className="text-brand-600"></span>
             </span>
           </div>
 
