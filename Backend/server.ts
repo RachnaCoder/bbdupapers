@@ -30,38 +30,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// MongoDB Connection
-// if (!MONGODB_URI) {
-//   console.error("CRITICAL: MONGODB_URI is not defined in environment variables.");
-//   console.error("ACTION REQUIRED: Go to the 'Secrets' panel in AI Studio and add MONGODB_URI.");
-// } else {
-//   console.log("Attempting to connect to MongoDB...");
-//   mongoose.connect(MONGODB_URI, {
-//     serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
-//   })
-//     .then(() => console.log("Successfully connected to MongoDB Atlas"))
-//     .catch((err) => {
-//       console.error("MongoDB Connection Failed!");
-//       console.error("--------------------------------------------------");
-//       console.error(`Error Message: ${err.message}`);
-      
-//       if (err.message.includes("ECONNREFUSED")) {
-//         console.error("Possible Cause: The connection was refused by the host.");
-//       } else if (err.message.includes("querySrv ENOTFOUND")) {
-//         console.error("Possible Cause: The hostname in your MONGODB_URI is incorrect.");
-//       } else if (err.message.includes("Authentication failed")) {
-//         console.error("Possible Cause: Invalid username or password in MONGODB_URI.");
-//       } else if (err.message.includes("IP") || err.name === "MongooseServerSelectionError") {
-//         console.error("Possible Cause: IP Whitelisting issue.");
-//         console.error("FIX: In MongoDB Atlas, go to 'Network Access' and click 'Allow Access From Anywhere' (0.0.0.0/0).");
-//       }
-      
-//       console.error("--------------------------------------------------");
-//     });
-// }
-
-
-// Replace your current mongoose.connect block with this:
 
 if (!MONGODB_URI) {
   console.error("CRITICAL: MONGODB_URI is not defined.");
@@ -126,15 +94,16 @@ app.use(cors({
 app.use(express.json());
 
 // Ensure temp uploads directory exists
-const tempDir = path.join(__dirname, "temp");
+// const tempDir = path.join(__dirname, "temp");
+const tempDir = path.join(process.cwd(), "temp");
 if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir);
+  fs.mkdirSync(tempDir, { recursive: true });
 }
 
 // Multer setup for temp storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "temp/");
+    cb(null, tempDir);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
@@ -279,17 +248,17 @@ app.post("/api/papers/upload", authenticateToken, upload.array("files", 4), asyn
 
   try {
     if (isPdf) {
-      localFilePath = files[0].path;
+      localFilePath = path.resolve(files[0].path);
     } else {
       // Convert images to PDF
-      const pdfPath = path.join(tempDir, `${Date.now()}-converted.pdf`);
+      const pdfPath = path.resolve(path.join(tempDir, `${Date.now()}-converted.pdf`));
       const doc = new PDFDocument();
       const stream = fs.createWriteStream(pdfPath);
       doc.pipe(stream);
 
       files.forEach((file, index) => {
         if (index > 0) doc.addPage();
-        doc.image(file.path, {
+        doc.image(path.resolve(file.path), {
           fit: [500, 700],
           align: "center",
           valign: "center",
@@ -301,7 +270,13 @@ app.post("/api/papers/upload", authenticateToken, upload.array("files", 4), asyn
       localFilePath = pdfPath;
 
       // Clean up source images
-       files.forEach((file) => fs.unlinkSync(file.path));
+      //  files.forEach((file) => fs.unlinkSync(file.path));
+      files.forEach((file) => {
+        const fullPath = path.resolve(file.path);
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        }
+      });
     }
 
 
@@ -309,11 +284,6 @@ app.post("/api/papers/upload", authenticateToken, upload.array("files", 4), asyn
   subject,
   course,
   });
-
-  //  if (!aiResult.isValid) {
-  // fs.unlinkSync(localFilePath);
-  // return res.status(400).json({ error: "Invalid paper" });
-  //  }
 
   if (!aiResult.isValid) {
   console.log("AI rejected but allowing:", aiResult.reason);
@@ -325,8 +295,8 @@ app.post("/api/papers/upload", authenticateToken, upload.array("files", 4), asyn
     });
 
     // Clean up local temp file
-    fs.unlinkSync(localFilePath);
-
+    // fs.unlinkSync(localFilePath);
+    
     const paper = new Paper({
       course,
       subject,
@@ -433,29 +403,6 @@ app.delete("/api/papers/:id", authenticateToken, async (req: any, res) => {
     res.status(500).json({ error: "Failed to delete paper" });
   }
 });
-
-// --- VITE MIDDLEWARE ---
-// async function startServer() {
-//   if (process.env.NODE_ENV !== "production") {
-//     const vite = await createViteServer({
-//       server: { middlewareMode: true },
-//       appType: "spa",
-//     });
-//     app.use(vite.middlewares);
-//   } else {
-//     app.use(express.static(path.join(__dirname, "dist")));
-//     app.get("*", (req, res) => {
-//       res.sendFile(path.join(__dirname, "dist", "index.html"));
-//     });
-//   }
-
-//   const PORT = 3000;
-//   app.listen(PORT, "0.0.0.0", () => {
-//     console.log(`Server running on http://localhost:${PORT}`);
-//   });
-// }
-
-// startServer();
 
 
 async function startServer() {
